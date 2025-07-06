@@ -1,11 +1,16 @@
-import { DUMMY_NEWS } from "@/dummy-news";
-import { NewsList } from "@/lib/news-list";
+import NewsList from "@/components/news-list";
+import { getAllNews } from "@/lib/news";
+import { Suspense } from "react";
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const news = await getAllNews();
+
   return (
     <>
-      <h1>NewsPage</h1>
-      <NewsList news={DUMMY_NEWS} />
+      <h1>News Page</h1>
+      <Suspense fallback={<p>Loading...</p>}>
+        <NewsList news={news} />
+      </Suspense>
     </>
   );
 }

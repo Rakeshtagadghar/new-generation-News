@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-export default function middleware(request) {
-  console.log("Middleware");
+export function middleware(request) {
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: '/news'
+};

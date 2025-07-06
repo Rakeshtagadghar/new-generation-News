@@ -1,9 +1,7 @@
-export async function GET(request) {
-    console.log(request);
-    return new Response('Hello, world!');
+export function GET(request) {
+
+  // return Response.json();
+  return new Response('Hello!');
 }
 
-// export async function POST(request) {
-//     const data = await request.json();
-//     return new Response(JSON.stringify(data));
-// }
+// export function POST(request) {}

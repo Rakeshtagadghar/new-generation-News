@@ -1,12 +1,13 @@
-import { getLatestNews } from "@/lib/news";
-import { NewsList } from "@/lib/news-list";
+import NewsList from '@/components/news-list';
+import { getLatestNews } from '@/lib/news';
 
-export default function LatestNews() {
-  const news = getLatestNews();
+export default async function LatestNewsPage() {
+  const latestNews = await getLatestNews();
+
   return (
-    <div>
+    <>
       <h2>Latest News</h2>
-      <NewsList news={news} />
-    </div>
+      <NewsList news={latestNews} />
+    </>
   );
 }

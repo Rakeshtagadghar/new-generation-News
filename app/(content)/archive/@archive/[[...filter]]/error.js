@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 export default function FilterError({ error }) {
   return (
     <div id="error">
-      <h1>An error occurred</h1>
-      <p>invalid path.</p>
+      <h2>An error occurred!</h2>
+      <p>{error.message}</p>
     </div>
   );
 }

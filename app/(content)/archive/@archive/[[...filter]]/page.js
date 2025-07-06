@@ -1,43 +1,58 @@
+import Link from "next/link";
+
+import NewsList from "@/components/news-list";
 import {
   getAvailableNewsMonths,
   getAvailableNewsYears,
   getNewsForYear,
   getNewsForYearAndMonth,
 } from "@/lib/news";
-import { NewsList } from "@/lib/news-list";
-import Link from "next/link";
+import { Suspense } from "react";
 
-export default function ArchiveYear({ params }) {
-  const filter = params.filter;
-  const selectedYear = filter?.[0];
-  const selectedMonth = filter?.[1];
+async function FilteredNews({ year, month }) {
   let news;
-  let links = getAvailableNewsYears();
-  if (selectedYear && !selectedMonth) {
-    news = getNewsForYear(selectedYear);
-    links = getAvailableNewsMonths(selectedYear);
+  if (year && !month) {
+    news = await getNewsForYear(year);
   }
-  if (selectedYear && selectedMonth) {
-    news = getNewsForYearAndMonth(selectedYear, selectedMonth);
-    links = [];
+  if (year && month) {
+    news = await getNewsForYearAndMonth(year, month);
   }
-
   let newsContent = <p>No news found for the selected period.</p>;
 
   if (news && news.length > 0) {
     newsContent = <NewsList news={news} />;
   }
+  return newsContent;
+}
+
+export default async function FilteredNewsPage({ params }) {
+  const filter = params.filter;
+
+  const selectedYear = filter?.[0];
+  const selectedMonth = filter?.[1];
+
+  const availableYears = await getAvailableNewsYears();
+  let links = availableYears;
+
+  if (selectedYear && !selectedMonth) {
+    links = await getAvailableNewsMonths(selectedYear);
+  }
+
+  if (selectedYear && selectedMonth) {
+    links = [];
+  }
+
+  const availableMonths = await getAvailableNewsMonths(selectedYear);
 
   if (
-    (selectedYear && !getAvailableNewsYears().includes(+selectedYear)) ||
-    (selectedMonth &&
-      !getAvailableNewsMonths(selectedYear).includes(+selectedMonth))
+    (selectedYear && !availableYears.includes(selectedYear)) ||
+    (selectedMonth && !availableMonths.includes(selectedMonth))
   ) {
-    throw new Error("Invalid filter");
+    throw new Error("Invalid filter.");
   }
 
   return (
-    <div>
+    <>
       <header id="archive-header">
         <nav>
           <ul>
@@ -45,6 +60,7 @@ export default function ArchiveYear({ params }) {
               const href = selectedYear
                 ? `/archive/${selectedYear}/${link}`
                 : `/archive/${link}`;
+
               return (
                 <li key={link}>
                   <Link href={href}>{link}</Link>
@@ -54,7 +70,9 @@ export default function ArchiveYear({ params }) {
           </ul>
         </nav>
       </header>
-      {newsContent}
-    </div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <FilteredNews year={selectedYear} month={selectedMonth} />
+      </Suspense>
+    </>
   );
 }
