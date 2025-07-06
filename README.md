@@ -265,10 +265,42 @@ This project uses **Next.js 14 with the App Router** because it provides:
 
 ## 🚨 Troubleshooting
 
-1. **Database Issues**: Ensure `data.db` is in the root directory
+1. **Database Issues**: Ensure `data.db` is in the root directory (local development)
 2. **Port Conflicts**: Make sure ports 3000 and 8080 are available
 3. **Build Errors**: Run `rm -rf .next` and `npm run build` to clean build cache
 4. **Module Errors**: Delete `node_modules` and run `npm install` again
+
+### Vercel Deployment Issues
+
+If you encounter SQLite errors on Vercel (`SqliteError: unable to open database file`), it's because Vercel's serverless environment has file system limitations. The current `lib/news.js` file includes a fallback to in-memory SQLite that should work on Vercel.
+
+**For Production Deployment Options:**
+
+1. **Current Setup (Works on Vercel)**: Uses SQLite with in-memory fallback
+2. **Vercel Postgres**: For production apps, use `lib/news-postgres.js`
+3. **External Database**: Connect to PostgreSQL, MySQL, or MongoDB
+
+**To use Vercel Postgres:**
+```bash
+# Install Vercel Postgres
+npm install @vercel/postgres
+
+# Replace lib/news.js with lib/news-postgres.js
+mv lib/news.js lib/news-sqlite.js
+mv lib/news-postgres.js lib/news.js
+
+# Set up Vercel Postgres in your dashboard
+# Add environment variables in Vercel dashboard
+```
+
+**Environment Variables for Vercel Postgres:**
+- `POSTGRES_URL`
+- `POSTGRES_PRISMA_URL`
+- `POSTGRES_URL_NON_POOLING`
+- `POSTGRES_USER`
+- `POSTGRES_HOST`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DATABASE`
 
 ## 📝 Contributing
 
