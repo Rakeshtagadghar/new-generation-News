@@ -14,7 +14,7 @@ async function FilterHeader({ year, month }) {
   let links = availableYears;
 
   if (year && !month) {
-    links = await getAvailableNewsMonths(year);
+    links = getAvailableNewsMonths(year);
   }
 
   if (year && month) {
@@ -23,7 +23,7 @@ async function FilterHeader({ year, month }) {
 
   if (
     (year && !availableYears.includes(year)) ||
-    (month && !getAvailableNewsMonths.includes(month))
+    (month && !getAvailableNewsMonths(year).includes(month))
   ) {
     throw new Error("Invalid filter.");
   }
@@ -51,8 +51,7 @@ async function FilteredNews({ year, month }) {
   let news;
   if (year && !month) {
     news = await getNewsForYear(year);
-  }
-  if (year && month) {
+  } else if (year && month) {
     news = await getNewsForYearAndMonth(year, month);
   }
   let newsContent = <p>No news found for the selected period.</p>;
@@ -64,7 +63,7 @@ async function FilteredNews({ year, month }) {
 }
 
 export default async function FilteredNewsPage({ params }) {
-  const filter = params.filter;
+  const { filter } = await params;
 
   const selectedYear = filter?.[0];
   const selectedMonth = filter?.[1];

@@ -4,12 +4,13 @@ import ModalBackdrop from "@/components/modal-backdrop";
 import { getNewsItem } from "@/lib/news";
 
 export default async function InterceptedImagePage({ params }) {
-  const newsItemSlug = params.slug;
-  const newsItem = await getNewsItem(newsItemSlug);
+  try {
+    const { slug: newsItemSlug } = await params;
+    const newsItem = await getNewsItem(newsItemSlug);
 
-  if (!newsItem) {
-    notFound();
-  }
+    if (!newsItem) {
+      notFound();
+    }
 
   return (
     <>
@@ -21,4 +22,8 @@ export default async function InterceptedImagePage({ params }) {
       </dialog>
     </>
   );
+  } catch (error) {
+    console.error('Error loading modal image:', error);
+    notFound();
+  }
 }

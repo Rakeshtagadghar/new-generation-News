@@ -4,12 +4,13 @@ import { notFound } from 'next/navigation';
 import { getNewsItem } from '@/lib/news';
 
 export default async function NewsDetailPage({ params }) {
-  const newsSlug = params.slug;
-  const newsItem = await getNewsItem(newsSlug);
+  try {
+    const { slug: newsSlug } = await params;
+    const newsItem = await getNewsItem(newsSlug);
 
-  if (!newsItem) {
-    notFound();
-  }
+    if (!newsItem) {
+      notFound();
+    }
 
   return (
     <article className="news-article">
@@ -23,4 +24,8 @@ export default async function NewsDetailPage({ params }) {
       <p>{newsItem.content}</p>
     </article>
   );
+  } catch (error) {
+    console.error('Error loading news item:', error);
+    notFound();
+  }
 }
